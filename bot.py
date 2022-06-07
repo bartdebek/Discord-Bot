@@ -40,7 +40,7 @@ async def janusz(ctx):
     await ctx.send(response)
 
 
-# Commands to send a random question to the person that send "!quiz" message.
+# Defining functions to draw a question and then pront it out
 
 quizContestants = {}
 
@@ -75,7 +75,7 @@ f"4. {questionsList[self.question_number]['answers'][3]}\n")
         return(f"{questionsList[self.question_number]['answers'][self.right_answer-1]}")
 
 
-
+# Commands to send a random question to the person that send "!quiz" message.
 
 @client.command(name='quiz', help='Shows a general knowledge question. You can receive points for guessing correctly!')
 async def on_message(message):
