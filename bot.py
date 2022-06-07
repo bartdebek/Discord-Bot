@@ -19,16 +19,11 @@ pozytywne_cytaty = df['Listacytatow'].tolist()
 
 quizContestants = {} 
 
-
-
-
 # Assign Discord token kept in .env file
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN') 
-
-
-    
+   
 # Assign "!" as a prefix to Discord commands
 client = commands.Bot(command_prefix='!')
 
@@ -48,8 +43,6 @@ async def poz(ctx):
     response = random.choice(quoteset)
     await ctx.send(response)
 
-
-
 # Defining functions to draw a question and then pront it out
 
 quizContestants = {}
@@ -68,8 +61,6 @@ def question_draw():
 
     return question_number,right_answer
 
-
-
 class Question():
     
     def __init__(self,question_number,right_answer) -> None:
@@ -85,7 +76,6 @@ f"4. {questionsList[self.question_number]['answers'][3]}\n")
 
     def get_right_answer(self):
         return(f"{questionsList[self.question_number]['answers'][self.right_answer-1]}")
-
 
 # Commands to send a random question to the person that send "!quiz" message.
 
@@ -117,12 +107,10 @@ async def on_message(message):
         nick = str(message.author)
         
         if nick not in quizContestants:
-
             quizContestants[nick] = 0
             quizContestants[nick] = quizContestants[nick]+1
 
         else:
-
             quizContestants[nick] = quizContestants[nick]+1
 
         newPoints = quizContestants[nick]
