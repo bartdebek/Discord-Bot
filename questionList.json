@@ -1,0 +1,15 @@
+{
+"incoterms": [
+    {
+    "question" : "Who is responsible for payment of import duties in DDP incoterm?",
+    "answers" :  ["Seller","Buyer","3rd Party"],
+    "right_answer" : "Seller"
+    },
+    {
+    "question" : "Who is responsible for payment of import duties in DAP incoterm?",
+    "answers" :  ["Seller","Buyer","3rd Party"],
+    "right_answer" : "Buyer"
+    }
+    
+]
+}
