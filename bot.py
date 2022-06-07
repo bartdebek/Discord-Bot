@@ -9,10 +9,10 @@ from dotenv import load_dotenv
 
 # Open a xls file with quotes and ads them to the list that is used by a bot
 
-df = pd.read_excel("cytaty.xls") 
+df = pd.read_excel("Static/cytaty.xls") 
 cytaty_konfucjusza = df['Listacytatow'].tolist()
 
-df = pd.read_excel("pozytywy.xls") 
+df = pd.read_excel("Static/pozytywy.xls") 
 pozytywne_cytaty = df['Listacytatow'].tolist()
 
 # Dictionary to keep a list of contestants and their points
@@ -117,7 +117,7 @@ async def on_message(message):
 
 # Contestants dictionary is also added to contestants.txt file to be used as a backup  
 
-        with open("contestants.txt","w") as file:
+        with open("Static/contestants.txt","w") as file:
             file.write(json.dumps(quizContestants))
         pointsMessage = (f'Now {nick} has {newPoints} points.')
         await message.channel.send(pointsMessage)
