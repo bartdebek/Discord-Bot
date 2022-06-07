@@ -49,7 +49,7 @@ quizContestants = {}
 
 # Open a file with quiz questions
 
-f = open("questionList.json") 
+f = open("Static/questionList.json") 
 questionsList = json.load(f)
 questionsList = questionsList["trivia_questions"]
 
