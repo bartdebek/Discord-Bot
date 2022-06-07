@@ -10,8 +10,10 @@ from dotenv import load_dotenv
 # Open a xls file with quotes and ads them to the list that is used by a bot
 
 df = pd.read_excel("cytaty.xls") 
-mylist = df['Listacytatow'].tolist()
+cytaty_konfucjusza = df['Listacytatow'].tolist()
 
+df = pd.read_excel("pozytywy.xls") 
+pozytywne_cytaty = df['Listacytatow'].tolist()
 
 # Dictionary to keep a list of contestants and their points
 
@@ -25,7 +27,7 @@ quizContestants = {}
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN') 
 
-# Open a file with quiz questions
+
     
 # Assign "!" as a prefix to Discord commands
 client = commands.Bot(command_prefix='!')
@@ -34,15 +36,25 @@ client = commands.Bot(command_prefix='!')
 
 @client.command(name='konf', help='Displays a random quote from Confucius')
 async def janusz(ctx):
-    cytaty_korwina = mylist
-
-    response = random.choice(cytaty_korwina)
+    quoteset = cytaty_konfucjusza
+    response = random.choice(quoteset)
     await ctx.send(response)
+
+# Commands to send a random positive quote
+
+@client.command(name='poz', help='Displays a positive quote to cheer you up!')
+async def poz(ctx):
+    quoteset = pozytywne_cytaty
+    response = random.choice(quoteset)
+    await ctx.send(response)
+
 
 
 # Defining functions to draw a question and then pront it out
 
 quizContestants = {}
+
+# Open a file with quiz questions
 
 f = open("questionList.json") 
 questionsList = json.load(f)
