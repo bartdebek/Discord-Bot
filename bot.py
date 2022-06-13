@@ -48,15 +48,16 @@ quiz_contestants = {}
 
 # Open a file with quiz questions
 
-f = open("Static/questionList.json","r")
-questionsList = json.load(f)
-questionsList = questionsList["trivia_questions"]
+f = open("Static/questionList.json","r",encoding = 'utf-8')
+questions_list = json.load(f)
+questions_list = questions_list["trivia_questions"]
 
 def question_draw():
-    """Function that draws a quiz question number to be asked when used with !quiz command"""
+    """Function that draws a quiz question number
+    to be asked when used with !quiz command"""
 
-    question_number = random.randint(0,len(questionsList)-1)
-    right_answer = questionsList[question_number]["right_answer"]
+    question_number = random.randint(0,len(questions_list)-1)
+    right_answer = questions_list[question_number]["right_answer"]
 
     return question_number,right_answer
 
@@ -67,18 +68,18 @@ class Question():
         self.right_answer = right_answer
 
     def __str__(self):
-        return (f"Question: {questionsList[self.question_number]['question']}\n\n"
-f"1. {questionsList[self.question_number]['answers'][0]}\n"
-f"2. {questionsList[self.question_number]['answers'][1]}\n"
-f"3. {questionsList[self.question_number]['answers'][2]}\n"
-f"4. {questionsList[self.question_number]['answers'][3]}\n")
+        return (f"Question: {questions_list[self.question_number]['question']}\n\n"
+f"1. {questions_list[self.question_number]['answers'][0]}\n"
+f"2. {questions_list[self.question_number]['answers'][1]}\n"
+f"3. {questions_list[self.question_number]['answers'][2]}\n"
+f"4. {questions_list[self.question_number]['answers'][3]}\n")
 
     def get_right_answer(self):
-        return f"{questionsList[self.question_number]['answers'][self.right_answer-1]}"
+        return f"{questions_list[self.question_number]['answers'][self.right_answer-1]}"
 
 # Commands to send a random question to the person that send "!quiz" message.
 
-@client.command(name='quiz', 
+@client.command(name='quiz',
 help='Shows a general knowledge question. You can receive points for guessing correctly!')
 
 async def on_message(message):
@@ -94,20 +95,19 @@ async def on_message(message):
 # Checking if author of answer was the person who used "!quiz" command,
 # setting the maximum annswer time to 60 seconds.
 
-    def check(m):
-        return m.author == message.author
+    def check(mes):
+        return mes.author == message.author
     try:
         guess = await client.wait_for('message', check=check , timeout=60.0)
     except asyncio.TimeoutError:
         await message.channel.send('Time is up')
 
-# If answer is given, program checks if it is the same as correct answer, 
+# If answer is given, program checks if it is the same as correct answer,
 # if yes points are awarded accordingly.
 
     if int(guess.content) == right_answer:
         await message.channel.send('Correct answer')
         nick = str(message.author)
-        
         if nick not in quiz_contestants:
             quiz_contestants[nick] = 0
             quiz_contestants[nick] = quiz_contestants[nick]+1
@@ -119,7 +119,7 @@ async def on_message(message):
 
 # Contestants dictionary is also added to contestants.txt file to be used as a backup
 
-        with open("Static/contestants.txt","w") as file:
+        with open("Static/contestants.txt","w",encoding = 'utf-8') as file:
             file.write(json.dumps(quiz_contestants))
         points_message = (f'Now {nick} has {new_points} points.')
         await message.channel.send(points_message)
