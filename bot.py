@@ -48,9 +48,9 @@ quiz_contestants = {}
 
 # Open a file with quiz questions
 
-f = open("Static/questionList.json","r",encoding = 'utf-8')
-questions_list = json.load(f)
-questions_list = questions_list["trivia_questions"]
+with open("Static/questionList.json","r",encoding = 'utf-8') as f:
+    questions_list = json.load(f)
+    questions_list = questions_list["trivia_questions"]
 
 def question_draw():
     """Function that draws a quiz question number
@@ -125,7 +125,9 @@ async def on_message(message):
         await message.channel.send(points_message)
 
     else:
-        await message.channel.send(f'Wrong answer, correct answer is {chosen_question.get_right_answer()}')
+        await message.channel.send(
+            f'Wrong answer, correct answer is {chosen_question.get_right_answer()}'
+            )
         print(right_answer)
 
 # Command brings up a quiz leaderboard
