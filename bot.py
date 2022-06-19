@@ -56,14 +56,14 @@ def question_draw():
     """Function that draws a quiz question number
     to be asked when used with !quiz command"""
 
-    question_number = random.randint(0,len(questions_list)-1)
+    question_number = random.randrange(len(questions_list)-1)
     right_answer = questions_list[question_number]["right_answer"]
 
     return question_number,right_answer
 
 class Question():
 
-    def __init__(self,question_number,right_answer) -> None:
+    def __init__(self,question_number,right_answer):
         self.question_number = question_number
         self.right_answer = right_answer
 
@@ -109,9 +109,7 @@ async def on_message(message):
         await message.channel.send('Correct answer')
         nick = str(message.author)
         if nick not in quiz_contestants:
-            quiz_contestants[nick] = 0
-            quiz_contestants[nick] = quiz_contestants[nick]+1
-
+            quiz_contestants[nick] = 1
         else:
             quiz_contestants[nick] = quiz_contestants[nick]+1
 
