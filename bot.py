@@ -58,24 +58,28 @@ def question_draw():
 
     question_number = random.randrange(len(questions_list)-1)
     right_answer = questions_list[question_number]["right_answer"]
+    right_answer_text = questions_list[question_number]['answers'][right_answer-1]
 
-    return question_number,right_answer
+    return question_number, right_answer, right_answer_text
+
+# QUESTION CLASS
 
 class Question():
 
-    def __init__(self,question_number,right_answer):
+    def __init__(self,question_number, right_answer, right_answer_text):
         self.question_number = question_number
         self.right_answer = right_answer
+        self.right_answer_text = right_answer_text
 
     def __str__(self):
         return (f"Question: {questions_list[self.question_number]['question']}\n\n"
-f"1. {questions_list[self.question_number]['answers'][0]}\n"
-f"2. {questions_list[self.question_number]['answers'][1]}\n"
-f"3. {questions_list[self.question_number]['answers'][2]}\n"
-f"4. {questions_list[self.question_number]['answers'][3]}\n")
+        f"1. {questions_list[self.question_number]['answers'][0]}\n"
+        f"2. {questions_list[self.question_number]['answers'][1]}\n"
+        f"3. {questions_list[self.question_number]['answers'][2]}\n"
+        f"4. {questions_list[self.question_number]['answers'][3]}\n")
 
     def get_right_answer(self):
-        return f"{questions_list[self.question_number]['answers'][self.right_answer-1]}"
+        return f"{self.right_answer_text}"
 
 # Commands to send a random question to the person that send "!quiz" message.
 
@@ -88,7 +92,7 @@ async def on_message(message):
 # Drawing and sending the question as a discord message
 
     random_question = question_draw()
-    chosen_question = Question(random_question[0],random_question[1])
+    chosen_question = Question(random_question[0],random_question[1],random_question[2])
     await channel.send(chosen_question)
     right_answer = random_question[1]
 
@@ -126,7 +130,6 @@ async def on_message(message):
         await message.channel.send(
             f'Wrong answer, correct answer is {chosen_question.get_right_answer()}'
             )
-        print(right_answer)
 
 # Command brings up a quiz leaderboard
 
