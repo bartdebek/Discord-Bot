@@ -29,7 +29,7 @@ client = commands.Bot(command_prefix='!')
 # Commands to send a random quote from Confucius
 
 @client.command(name='konf', help='Displays a random quote from Confucius')
-async def janusz(ctx):
+async def konf(ctx):
     quoteset = cytaty_konfucjusza
     response = random.choice(quoteset)
     await ctx.send(response)
