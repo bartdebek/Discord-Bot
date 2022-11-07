@@ -44,12 +44,6 @@ async def on_message(message):
     """
     channel = message.channel
     quiz = Quiz()
-    # question_number = quiz.question_draw()
-    # question_content = quiz.questions_list[question_number]["question"]
-    # answer = quiz.questions_list[question_number]["answers"]
-    # question_answers = f'1. **{answer[0]}** \n2. **{answer[1]}** \n'\
-    #                     f'3. **{answer[2]}** \n4. **{answer[3]}**'
-    # right_answer = quiz.questions_list[question_number]["right_answer"]
 
     await channel.send("**Quiz Starting...**")
     time.sleep(1)
