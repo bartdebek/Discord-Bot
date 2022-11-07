@@ -48,10 +48,10 @@ async def on_message(message):
     QuestNumber = quiz.question_draw()
     question_content = quiz.questions_list[QuestNumber]["question"]
     answer = quiz.questions_list[QuestNumber]["answers"]
-    question_answers = f'1. {answer[0]} \n2. {answer[1]} \n3. {answer[2]} \n4. {answer[3]}'
+    question_answers = f'1. **{answer[0]}** \n2. **{answer[1]}** \n3. **{answer[2]}** \n4. **{answer[3]}**'
     right_answer = quiz.questions_list[QuestNumber]["right_answer"]
 
-    await channel.send("Quiz Starting...")
+    await channel.send("**Quiz Starting...**")
     time.sleep(1)
     await channel.send(question_content)
     await channel.send(question_answers)
@@ -70,7 +70,7 @@ async def on_message(message):
 # If answer is given, program checks if it is the same as correct answer, if yes points are awarded accordingly. 
 
     if int(guess.content) == right_answer:
-        await message.channel.send('Correct answer')
+        await message.channel.send('**Correct answer**')
         nick = str(message.author)
         
         if nick not in quiz_contestants:
@@ -86,11 +86,16 @@ async def on_message(message):
 
         with open("static/contestants.txt","w") as file:
             file.write(json.dumps(quiz_contestants))
-        points_message = f'Now {nick} has {newPoints} points.'
+
+        if newPoints == 1:
+            points_message = f'Now **{nick}** has **{newPoints} point**.'
+        else:
+            points_message = f'Now **{nick}** has **{newPoints} points**.'
+            
         await message.channel.send(points_message)
 
     else:
-        await message.channel.send(f'Wrong answer, correct answer is {answer[right_answer-1]}')
+        await message.channel.send(f'Wrong answer, correct answer is **{answer[right_answer-1]}**')
     
 # Command brings up a quiz leaderboard
 
