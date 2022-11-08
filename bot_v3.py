@@ -98,9 +98,9 @@ async def on_message(message):
 @client.command(name='leaderboard', help='Shows current quiz leaderboard')
 async def leaderboard(ctx):
     """
-    Function to bring up a quiz leaderboard
+    Function to bring up a quiz leaderboard, results are sorted from highest to lowest
     """
-    for key, val in quiz_contestants.items():
+    for key, val in sorted(quiz_contestants.items(), key=lambda x: x[1], reverse=True):
         player_stats = (f"{key}  {val}")
         await ctx.send(player_stats)
 
