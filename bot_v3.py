@@ -14,8 +14,11 @@ df = pd.read_excel("static/cytaty.xls")
 mylist = df["Listacytatow"].tolist()
 
 
-# Dictionary to keep a list of contestants and their points
+# Dictionary to keep a list of contestants and their points, load existing file if exists
 quiz_contestants = {}
+if os.path.exists("static/contestants.txt"):
+    with open("static/contestants.txt", "r", encoding="utf-8") as file:
+        quiz_contestants = json.load(file)
 
 # Assign Discord token kept in .env file
 load_dotenv()
@@ -73,10 +76,10 @@ async def on_message(message):
 
         if nick not in quiz_contestants:
             quiz_contestants[nick] = 0
-            quiz_contestants[nick] = quiz_contestants[nick] + 1
+            quiz_contestants[nick] += 1
 
         else:
-            quiz_contestants[nick] = quiz_contestants[nick] + 1
+            quiz_contestants[nick] += 1
 
         new_points = quiz_contestants[nick]
 
