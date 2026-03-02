@@ -54,67 +54,37 @@ async def conf(ctx):
 
 @client.command(
     name="quiz",
-    help="Shows a general knowledge question."
-    "You can receive points for guessing correctly!",
+    help="Shows a general knowledge question. You can receive points for guessing correctly!",
 )
-async def on_message(message):
+async def on_message(ctx):
+    """Draw a random question and present it as a button-based quiz.
+
+    A ``QuizView`` (created from JSON) supplies clickable answer buttons
+    and automatically handles checking the response and awarding points.
     """
-    Drawing and sending the question as a discord message
-    """
-    channel = message.channel
+
     quiz = Quiz()
+    await ctx.send("**Quiz Starting...**")
+    await asyncio.sleep(1)
 
-    await channel.send("**Quiz Starting...**")
-    time.sleep(1)
-    await channel.send(quiz.question_content)
-    await channel.send(quiz.question_answers())
-
-    def check(msg):
-        """
-        Checking if author of answer was the person who used "!quiz" command
-        """
-        return msg.author == message.author
-
-    try:
-        # Setting the maximum annswer time to 60 seconds.
-        guess = await client.wait_for("message", check=check, timeout=60.0)
-    except asyncio.TimeoutError:
-        await message.channel.send("Time is up")
-
-    """
-    If answer is given, program checks if it is the same as correct answer, if yes points are awarded accordingly.
-    """
-    if int(guess.content) == quiz.right_answer:
-        await message.channel.send("**Correct answer**")
-        nick = str(message.author)
-        player = get_player(nick)
-        player.add_points()
-
-        # still update the plain-text backup if you like;
-        # this is optional now that persistence lives in Player.save().
-        with open("static/contestants.json", "w", encoding="utf-8") as file:
-            file.write(json.dumps([p.to_dict() for p in quiz_contestants]))
-        if player.points == 1:
-            points_message = f"Now **{nick}** has **{player.points} point**."
-        else:
-            points_message = f"Now **{nick}** has **{player.points} points**."
-
-        await message.channel.send(points_message)
-
-    else:
-        nick = str(message.author)
-        player = get_player(nick)
-        player.add_wrong_answer()
-        await message.channel.send(
-            f"Wrong answer, correct answer is **{quiz.answer[quiz.right_answer-1]}**"
-        )
+    from utils import QuizView
+    view = QuizView(quiz, author=ctx.author)
+    embed = view.embed or discord.Embed(description=quiz.question_content)
+    await ctx.send(embed=embed, view=view)
 
 
 @client.command(name="leaderboard", help="Shows current quiz leaderboard")
 async def leaderboard(ctx):
     """
-    Function to bring up a quiz leaderboard, results are sorted from highest to lowest
+    Function to bring up a quiz leaderboard, results are sorted from highest to lowest.
+
+    We reload the contestants from disk before printing so that if any
+    code has updated the storage file outside of the in-memory list
+    (or if we accidentally have stale objects) we still show the latest
+    values.
     """
+    global quiz_contestants
+    quiz_contestants = Player.load_all()
     for player in sorted(quiz_contestants, key=lambda x: x.points, reverse=True):
         player_stats = f"{player.name}  {player.points}"
         await ctx.send(player_stats)
@@ -122,8 +92,13 @@ async def leaderboard(ctx):
 @client.command(name="stats", help="Shows your quiz stats")
 async def stats(ctx):
     """
-    Function to show quiz stats of a player, including points, correct and wrong answers
+    Function to show quiz stats of a player, including points, correct and wrong answers.
+
+    Reload players first to keep the view aligned with the file.
     """
+    global quiz_contestants
+    quiz_contestants = Player.load_all()
+
     nick = str(ctx.author)
     for player in quiz_contestants:
         if player.name == nick:
