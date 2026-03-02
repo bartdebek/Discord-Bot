@@ -7,18 +7,32 @@ import pandas as pd
 import discord
 from discord.ext import commands
 from dotenv import load_dotenv
-from quiz_func import Quiz
+from utils import Quiz, Player
 
 # Open a xls file with quotes and ads them to the list that is used by a bot
 df = pd.read_excel("static/cytaty.xls")
 mylist = df["Listacytatow"].tolist()
 
 
-# Dictionary to keep a list of contestants and their points, load existing file if exists
-quiz_contestants = {}
-if os.path.exists("static/contestants.txt"):
-    with open("static/contestants.txt", "r", encoding="utf-8") as file:
-        quiz_contestants = json.load(file)
+# List of Player objects that participate in the quiz.  Load from
+# disk using the new convenience method; we no longer keep raw dicts in
+# memory.
+quiz_contestants = Player.load_all()
+
+
+def get_player(nick: str) -> Player:
+    """Return existing Player with that name or create a new one.
+
+    The new instance is appended to ``quiz_contestants`` so it will
+    eventually be persisted by ``Player.save`` calls triggered by
+    mutate methods.
+    """
+    for p in quiz_contestants:
+        if p.name == nick:
+            return p
+    new = Player(nick)
+    quiz_contestants.append(new)
+    return new
 
 # Assign Discord token kept in .env file
 load_dotenv()
@@ -73,30 +87,24 @@ async def on_message(message):
     if int(guess.content) == quiz.right_answer:
         await message.channel.send("**Correct answer**")
         nick = str(message.author)
+        player = get_player(nick)
+        player.add_points()
 
-        if nick not in quiz_contestants:
-            quiz_contestants[nick] = 0
-            quiz_contestants[nick] += 1
-
+        # still update the plain-text backup if you like;
+        # this is optional now that persistence lives in Player.save().
+        with open("static/contestants.json", "w", encoding="utf-8") as file:
+            file.write(json.dumps([p.to_dict() for p in quiz_contestants]))
+        if player.points == 1:
+            points_message = f"Now **{nick}** has **{player.points} point**."
         else:
-            quiz_contestants[nick] += 1
-
-        new_points = quiz_contestants[nick]
-
-        """
-        Contestants dictionary is also added to contestants.txt file to be used as a backup.
-        """
-        with open("static/contestants.txt", "w", encoding="utf-8") as file:
-            file.write(json.dumps(quiz_contestants))
-
-        if new_points == 1:
-            points_message = f"Now **{nick}** has **{new_points} point**."
-        else:
-            points_message = f"Now **{nick}** has **{new_points} points**."
+            points_message = f"Now **{nick}** has **{player.points} points**."
 
         await message.channel.send(points_message)
 
     else:
+        nick = str(message.author)
+        player = get_player(nick)
+        player.add_wrong_answer()
         await message.channel.send(
             f"Wrong answer, correct answer is **{quiz.answer[quiz.right_answer-1]}**"
         )
@@ -107,9 +115,20 @@ async def leaderboard(ctx):
     """
     Function to bring up a quiz leaderboard, results are sorted from highest to lowest
     """
-    for key, val in sorted(quiz_contestants.items(), key=lambda x: x[1], reverse=True):
-        player_stats = f"{key}  {val}"
+    for player in sorted(quiz_contestants, key=lambda x: x.points, reverse=True):
+        player_stats = f"{player.name}  {player.points}"
         await ctx.send(player_stats)
+
+@client.command(name="stats", help="Shows your quiz stats")
+async def stats(ctx):
+    """
+    Function to show quiz stats of a player, including points, correct and wrong answers
+    """
+    nick = str(ctx.author)
+    for player in quiz_contestants:
+        if player.name == nick:
+            await ctx.send(str(player))
+            break
 
 
 if __name__ == "__main__":
