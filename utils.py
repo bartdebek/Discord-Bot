@@ -125,4 +125,4 @@ class Player:
             json.dump([p.to_dict() for p in players], f, indent=2)
 
     def __str__(self):
-        return f"""**{self.name} lifetime stats:**\n**{self.points}** points\n**{self.correct_answers}** correct answers\n**{self.wrong_answers}** wrong answers\n**{self.success_rate():.2f}%** success rate"
+        return f"**{self.name} lifetime stats:**\n**{self.points}** points\n**{self.correct_answers}** correct answers\n**{self.wrong_answers}** wrong answers\n**{self.success_rate():.2f}%** success rate"
