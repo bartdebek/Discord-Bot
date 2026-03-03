@@ -146,7 +146,7 @@ if discord is not None:
                         media_url = acc.get("media", {}).get("url")
             if media_url:
                 self.embed = discord.Embed(description=quiz.question_content)
-                self.embed.set_image(url=media_url)
+                self.embed.set_thumbnail(url=media_url)
 
             # create buttons
             for row in spec.get("components", []):
